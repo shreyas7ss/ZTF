@@ -1,0 +1,10 @@
+# Phase 1 — Zero-Trust Non-Human Identity Framework (Agentic SOC)
+# Install with: pip install -r requirements.txt
+
+# ── LangGraph / LangChain ───────────────────────────────────────────────────
+langgraph>=1.0.5
+langchain-core>=1.2.6
+
+# ── JWT & Cryptography ──────────────────────────────────────────────────────
+PyJWT>=2.8.0
+cryptography>=42.0.0

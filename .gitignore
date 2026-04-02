@@ -1,0 +1,57 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+
+# === Virtual Environments ===
+venv/
+.venv/
+env/
+.env/
+
+# === Distribution / Packaging ===
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# === Testing ===
+.pytest_cache/
+.coverage
+htmlcov/
+*.coveragerc
+
+# === Jupyter ===
+.ipynb_checkpoints/
+*.ipynb
+
+# === Editors / IDEs ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# === OS artifacts ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Project-specific ===
+# Generated incident reports — contain sensitive case data
+incident_report.json
+
+# Compiled LangGraph/LangChain cache
+.langchain/
+.langgraph_cache/
+
+# Secrets / keys (never commit real keys)
+*.pem
+*.key
+*.p12
+*.env
+.env.*
+secrets.json
