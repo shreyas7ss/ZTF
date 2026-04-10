@@ -1,0 +1,14 @@
+[
+  {
+    "timestamp": "2026-04-05T16:30:34.513671",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-05T16:30:34.517616",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  }
+]

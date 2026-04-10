@@ -8,3 +8,11 @@ langchain-core>=1.2.6
 # ── JWT & Cryptography ──────────────────────────────────────────────────────
 PyJWT>=2.8.0
 cryptography>=42.0.0
+
+# ── Redis & HTTP ────────────────────────────────────────────────────────────
+redis>=5.0.0
+requests>=2.31.0
+
+# ── Phase 3: AI Intelligence ────────────────────────────────────────────────
+langchain-groq>=0.1.0
+python-dotenv>=1.0.0
