@@ -17,26 +17,27 @@ A Zero-Trust security harness that lets AI agents autonomously investigate SOC a
 - [What This Project Does](#what-this-project-does)
 - [Architecture Overview](#architecture-overview)
 - [The 4 Security Layers](#the-4-security-layers)
+- [Project Structure](#project-structure)
+- [Setup & Installation](#setup--installation)
+- [How to Run Each Demo](#how-to-run-each-demo)
 - [Phase Breakdown](#phase-breakdown)
 - [Demo Walkthrough](#demo-walkthrough)
-- [Setup & Installation](#setup--installation)
-- [How to Run Each Phase](#how-to-run-each-phase)
+- [The ML Model](#the-ml-model)
 - [Agent Flow Diagrams](#agent-flow-diagrams)
 - [Zero-Trust Principles Applied](#zero-trust-principles-applied)
 - [Key Design Decisions](#key-design-decisions)
 - [Known Limitations & Future Work](#known-limitations--future-work)
-- [Tech Stack Table](#tech-stack-table)
-- [Team](#team)
+- [Tech Stack](#tech-stack)
 
 ---
 
 ## What This Project Does
 
-In a modern Security Operations Center (SOC), AI agents are being deployed to handle high-volume alerts autonomously. However, these agents introduce a massive new attack surface: if an agent's prompt is injected or its logic is compromised, it could be used to execute malicious shell commands, dump sensitive logs, or pivot into internal infrastructure. 
+In a modern Security Operations Center (SOC), AI agents are being deployed to handle high-volume alerts autonomously. However, these agents introduce a new attack surface: if an agent is compromised or prompt-injected, it could execute malicious shell commands, dump sensitive logs, or pivot into internal infrastructure.
 
-This project solves that problem by surrounding the AI agent with a **Zero-Trust Security Harness**. Instead of trusting the agent's code, the system treats every tool call as potentially malicious. Before an agent can read a log or scan a file, its request must pass through four distinct security gates: cryptographic identity validation, real-time revocation checks, centralized policy enforcement (OPA), and ML-based behavioral analysis.
+This project solves that problem with a **Zero-Trust Security Harness**. The system treats every tool call as potentially malicious. Before an agent can read a log or scan a file, its request must pass through four distinct security gates — cryptographic identity, real-time revocation checks, centralized policy enforcement, and ML-based behavioral analysis.
 
-The result is a system where an attack is blocked in **under 500ms** without any human intervention. For example, if a compromised agent tries to use a legitimate tool like `read_logs` as part of an abnormal reconnaissance pattern (e.g., 15 calls in 2 seconds), the ML Behavioral Supervisor detects the anomaly and triggers an instant "Lockdown," revoking the agent's identity and halting the investigation before any data is exfiltrated.
+The result: a compromised agent is blocked in **under 500ms** with no human intervention.
 
 ---
 
@@ -50,30 +51,30 @@ The result is a system where an attack is blocked in **under 500ms** without any
                                     ┌───────────▼───────────┐
                                     │     Agent (LangGraph) │
                                     └───────────┬───────────┘
-                                                │
+                                                │  Tool Call Attempt
                        ┌────────────────────────▼────────────────────────┐
-                       │            1. Identity Check (JWT)              │
-                       │   Presented by Agent -> Signed by RSA Private   │
+                       │         Gate 1 — Identity Check (JWT)           │
+                       │   RS256 signature valid? Token not expired?     │
                        └────────────────────────┬────────────────────────┘
-                                                │
+                                                │ PASS
                        ┌────────────────────────▼────────────────────────┐
-                       │           2. Revocation Check (Redis)           │
-                       │   Is this specific Token ID (JTI) revoked?      │
+                       │         Gate 2 — Revocation Check (Redis)       │
+                       │   Is this Token ID (JTI) still active?         │
                        └────────────────────────┬────────────────────────┘
-                                                │
+                                                │ PASS
                        ┌────────────────────────▼────────────────────────┐
-                       │          3. Policy Check (OPA-Rego)             │
-                       │   Does Central Policy ALLOW this tool call?     │
+                       │         Gate 3 — Policy Check (OPA/Rego)        │
+                       │   Does policy ALLOW this agent + tool?         │
                        └────────────────────────┬────────────────────────┘
-                                                │
+                                                │ PASS
                        ┌────────────────────────▼────────────────────────┐
-                       │      4. Behavioral Check (ML Supervisor)        │
-                       │   Does call match normal session patterns?      │
+                       │         Gate 4 — Behavioral Check (ML)         │
+                       │   Does session pattern match the baseline?     │
                        └───────────┬────────────────────────┬────────────┘
-                                   │                        │
+                                   │ NORMAL                 │ ANOMALY
                        ┌───────────▼───────────┐    ┌───────▼────────────┐
                        │     Tool Executes     │    │  Lockdown Trigger  │
-                       │ (read_logs, VT_scan)  │    │ (Revoke & Quarantine)│
+                       │ (read_logs, vt_scan)  │    │ Revoke + Quarantine│
                        └───────────────────────┘    └────────────────────┘
 ```
 
@@ -81,58 +82,63 @@ The result is a system where an attack is blocked in **under 500ms** without any
 
 ## The 4 Security Layers
 
-| Layer | Technology | What It Checks | What It Blocks | Response Time |
+| Layer | Technology | What It Checks | What It Blocks | Response |
 | :--- | :--- | :--- | :--- | :--- |
-| **1. Cryptographic ID** | RS256 JWT | Signature & Expiry | Expired/Forged Tokens | < 10ms |
-| **2. Real-time Revocation** | Redis | JTI Status | Replay attacks / Killed sessions | < 5ms |
-| **3. Policy Engine** | OPA (Rego) | RBAC & Tool Scopes | Unauthorized Tool Calls | < 50ms |
-| **4. ML Supervisor** | Isolation Forest | Sequence & Timing | Prompt Injection / Rogue Behavior | < 100ms |
+| **Gate 1 — Cryptographic ID** | RS256 JWT | Signature & Expiry | Forged/expired tokens | < 10ms |
+| **Gate 2 — Real-time Revocation** | Redis | JTI blocklist status | Replay attacks, killed sessions | < 5ms |
+| **Gate 3 — Policy Engine** | OPA (Rego) | RBAC & tool scopes | Unauthorized tool calls | < 50ms |
+| **Gate 4 — ML Supervisor** | Isolation Forest | Session behavior patterns | Prompt injection, rogue behavior | < 100ms |
 
 ---
 
-## Phase Breakdown
+## Project Structure
 
-### Phase 1: Secure Foundation 🛡️
-Builds the core investigation logic and the first layer of cryptographic defense.
-- **Key Deliverables**: LangGraph agent workflow, JWT Provider (RS256), `@requires_auth` decorator, and investigation tools.
-- **The "Wow" Moment**: Attempting to call a tool directly without a token results in an immediate `UnauthorizedToolCallError` before a single line of tool logic runs.
-- **Run Command**: `python phase1_soc/main.py`
-
-### Phase 2: Zero-Trust & Auto-Response ⛓️
-Introduces centralized policy and the "Fail-Closed" infrastructure.
-- **Key Deliverables**: Redis revocation store, OPA REST integration, `soc_policy.rego`, and the Lockdown Engine.
-- **The "Wow" Moment**: Running `malicious_agent.py` and seeing the terminal erupt into a `[LOCKDOWN] TRIGGERED` alert as OPA blocks an unauthorized `exec_shell` call.
-- **Run Command**: `python phase2_soc/demo.py`
-
-### Phase 3: LLM Intelligence 🧠
-Upgrades the agent's reasoning capabilities using advanced LLMs and high-speed inference.
-- **Key Deliverables**: Groq Llama 3.3 integration, LLM-based entity extraction, and Senior Analyst synthesis.
-- **The "Wow" Moment**: Providing a "messy" natural language alert that contains no structured fields, yet the agent correctly identifies the IP and suspicious file through reasoning.
-- **Run Command**: `python phase3_soc/main.py`
-
-### Phase 4: ML Behavioral Supervisor 🤖
-Moves security from static rules (Gate 3) to dynamic behavioral analysis (Gate 4).
-- **Key Deliverables**: Telemetry collector, Feature Engineering engine, and Isolation Forest training/inference pipeline.
-- **The "Wow" Moment**: A "Smart Attacker" uses only tools they are *allowed* to use, but gets caught and quarantined because their *behavioral pattern* deviates from the baseline.
-- **Run Command**: `python phase4_soc/demo_phase4.py`
-
----
-
-## Demo Walkthrough
-
-### Scenario A: Normal Agent Path
-1. Agent receives an alert for IP `192.168.1.45`.
-2. Agent requests a token; Identity Provider issues a JWT signed with RS256.
-3. Every tool call (`read_logs`, `virustotal_scan`) is checked against Redis and OPA.
-4. ML Supervisor monitors the timing and order of calls, finding them "Normal".
-5. Investigation completes; final report is saved to `incident_report.json`.
-
-### Scenario B: Smart Attacker (ML Detection)
-1. Agent-666 receives an alert but is actually being controlled by a prompt injection.
-2. The attacker avoids using unauthorized tools like `exec_shell` to bypass OPA.
-3. Instead, the attacker runs `read_logs` 15 times repeatedly to scrape data.
-4. **ML Supervisor** detects the abnormal frequency and tool sequence.
-5. Gate 4 fails; Lockdown is triggered; Token is revoked in Redis; Agent reaches `blocked_node`.
+```
+ZTF/
+├── core/                        # Shared security infrastructure (all phases use this)
+│   ├── identity_provider.py     # JWT issuance & RS256 validation
+│   ├── revocation_store.py      # Redis-backed token/agent revocation
+│   ├── lockdown.py              # Auto-quarantine & incident logging
+│   ├── opa_client.py            # OPA REST API client
+│   ├── mock_data.py             # Simulated CAN bus logs & VirusTotal data
+│   └── policies/
+│       ├── soc_policy.rego      # OPA Rego policy (default deny)
+│       └── upload_policy.py     # Uploads policy to running OPA server
+│
+├── security/                    # The 3 distinct gate-level wrappers
+│   ├── tool_wrapper_p1.py       # Phase 1: Gate 1 only (JWT, no Docker needed)
+│   ├── tool_wrapper_p2.py       # Phase 2/3: Gates 1, 2, 3 (JWT + Redis + OPA)
+│   ├── tool_wrapper_p4.py       # Phase 4: All 4 gates (+ ML Supervisor)
+│   └── soc_tools.py             # Tool factory (read_logs, virustotal_scan, etc.)
+│
+├── agents/                      # All agent implementations
+│   ├── agent_p1.py              # Phase 1: Regex-based investigation
+│   ├── agent_p3.py              # Phase 3+: Groq LLM-powered reasoning
+│   ├── malicious_agent.py       # Gate 3 violator (exec_shell attempt)
+│   └── malicious_agent_v2.py   # Gate 4 violator (behavioral attacker)
+│
+├── ml/                          # Machine Learning pipeline (Phase 4)
+│   ├── telemetry.py             # JSONL event logger
+│   ├── features.py              # 10-feature behavioral extractor
+│   ├── generate_baseline.py     # Generates 100 normal training sessions
+│   ├── train_model.py           # Trains & saves the Isolation Forest model
+│   ├── ml_supervisor.py         # Real-time inference engine
+│   └── models/
+│       └── isolation_forest.pkl # Pre-trained model (ready to use)
+│
+├── llm/
+│   └── llm_provider.py          # Groq Llama 3.3 70B initialization
+│
+├── demos/                       # Entry points — one per phase
+│   ├── demo_p1.py               # Phase 1 demo (no Docker required)
+│   ├── demo_p2.py               # Phase 2 demo (Docker required)
+│   ├── demo_p3.py               # Phase 3 demo (Docker + Groq API)
+│   └── demo_p4.py               # Phase 4 demo (Docker + Groq API + ML)
+│
+├── .env                         # API keys (not committed)
+├── requirements.txt
+└── README.md
+```
 
 ---
 
@@ -140,126 +146,298 @@ Moves security from static rules (Gate 3) to dynamic behavioral analysis (Gate 4
 
 ### Prerequisites
 - **Python 3.12+**
-- **Docker Desktop** (for Redis and OPA)
-- **Groq API Key** (from [console.groq.com](https://console.groq.com))
+- **Docker Desktop** (required for Phase 2, 3, and 4)
+- **Groq API Key** — get one free at [console.groq.com](https://console.groq.com)
 
-### Installation Steps
-1. **Clone the Repo**
-   ```bash
-   git clone https://github.com/shreyas7ss/ZTF.git
-   cd ZTF
-   ```
-2. **Setup Environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # venv\Scripts\activate on Windows
-   pip install -r requirements.txt
-   ```
-3. **Configure API Keys**
-   Create a `.env` file in the root:
-   ```env
-   GROK_API_KEY=your_groq_key_here
-   ```
-4. **Start Security Infrastructure**
-   ```bash
-   docker run -d -p 6379:6379 --name redis-soc redis
-   docker run -d -p 8181:8181 --name opa-soc openpolicyagent/opa run --server --addr :8181
-   ```
-5. **Initialize Policy & Model**
-   ```bash
-   python phase4_soc/policies/upload_policy.py
-   python phase4_soc/train_model.py
-   ```
+### Step 1 — Clone & Install
+
+```bash
+git clone https://github.com/shreyas7ss/ZTF.git
+cd ZTF
+
+python -m venv venv
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # macOS/Linux
+
+pip install -r requirements.txt
+```
+
+### Step 2 — Configure API Key
+
+Create a `.env` file in the project root:
+
+```env
+GROK_API_KEY=your_groq_api_key_here
+```
+
+### Step 3 — Start Docker Services
+
+> **Only needed for Phase 2, 3, and 4. Skip for Phase 1.**
+
+```bash
+# If running for the first time:
+docker run -d -p 6379:6379 --name redis-soc redis
+docker run -d -p 8181:8181 --name opa-soc openpolicyagent/opa run --server --addr :8181
+
+# If containers already exist (subsequent runs):
+docker start redis-soc opa-soc
+```
+
+### Step 4 — Upload OPA Policy
+
+> **Only needed for Phase 2, 3, and 4.**
+
+```bash
+python -m core.policies.upload_policy
+```
+
+Expected output: `[OPA] Policy uploaded successfully`
 
 ---
 
-## How to Run Each Phase
+## How to Run Each Demo
 
-| Phase | Command | Expected Output | Created Files |
-| :--- | :--- | :--- | :--- |
-| **1** | `python phase1_soc/main.py` | CLI investigation logs | `incident_report.json` |
-| **2** | `python phase2_soc/demo.py` | Lockdown terminal alerts | `lockdown_log.json` |
-| **3** | `python phase3_soc/main.py` | LLM reasoning logs | `incident_report.json` |
-| **4** | `python phase4_soc/demo_phase4.py` | ML Anomaly detections | `telemetry_log.jsonl` |
+All commands are run from the **project root** (`ZTF/`).
+
+---
+
+### Phase 1 — JWT Authentication Only
+> No Docker required. Just Python.
+
+```bash
+python -m demos.demo_p1
+```
+
+**What you'll see:**
+- Agent investigates alert for IP `192.168.1.45`
+- JWT issued and validated on every tool call
+- `incident_report.json` written with findings
+
+---
+
+### Phase 2 — Zero-Trust + Auto-Lockdown
+> Requires: Docker (Redis + OPA)
+
+```bash
+docker start redis-soc opa-soc
+python -m core.policies.upload_policy
+python -m demos.demo_p2
+```
+
+**What you'll see:**
+- `agent-007` successfully completes the investigation
+- `agent-666` attempts `exec_shell` → **BLOCKED by OPA (Gate 3)**
+- `[LOCKDOWN] TRIGGERED` appears in the terminal
+- `lockdown_log.json` records the incident
+
+---
+
+### Phase 3 — LLM-Powered Intelligence
+> Requires: Docker (Redis + OPA) + Groq API Key in `.env`
+
+```bash
+docker start redis-soc opa-soc
+python -m core.policies.upload_policy
+python -m demos.demo_p3
+```
+
+**What you'll see:**
+- Agent receives a messy, unstructured alert
+- Groq LLM extracts the IP and suspicious filename through reasoning
+- LLM synthesises a professional incident verdict
+- `incident_report.json` contains the full AI-generated analysis
+
+---
+
+### Phase 4 — Full 4-Gate Demo with ML Supervisor
+> Requires: Docker (Redis + OPA) + Groq API Key in `.env`
+
+```bash
+docker start redis-soc opa-soc
+python -m core.policies.upload_policy
+
+# Train the behavioral model (run once, model is saved)
+python -m ml.generate_baseline
+python -m ml.train_model
+
+# Run the full 3-scenario demo
+python -m demos.demo_p4
+```
+
+**What you'll see (3 scenarios):**
+1. `agent-007` — all 4 gates pass → **Investigation SUCCESS**
+2. `agent-666` — tries `exec_shell` → **BLOCKED by Gate 3 (OPA)**
+3. `agent-666-smart` — uses only allowed tools but hammers them 15x → **BLOCKED by Gate 4 (ML)**
+
+**Output files:**
+- `incident_report.json` — final investigation report
+- `lockdown_log.json` — all lockdown incidents
+- `telemetry_log.jsonl` — raw behavioral telemetry stream
+- `ml/models/isolation_forest.pkl` — trained model artifact
+
+---
+
+## Phase Breakdown
+
+### Phase 1: Secure Foundation
+Builds the core investigation logic and the first layer of cryptographic defense.
+- **Deliverables**: LangGraph agent workflow, JWT Identity Provider (RS256), `@requires_auth` decorator
+- **The Wow Moment**: Calling a tool without a valid token fails instantly before a single line of tool logic runs
+
+### Phase 2: Zero-Trust & Auto-Response
+Introduces centralized policy enforcement and real-time incident response.
+- **Deliverables**: Redis revocation store, OPA integration, `soc_policy.rego`, Lockdown Engine
+- **The Wow Moment**: `agent-666` tries `exec_shell` and the terminal erupts with `[LOCKDOWN] TRIGGERED` as it gets quarantined
+
+### Phase 3: LLM Intelligence
+Upgrades the agent's reasoning using Groq's high-speed LLM inference.
+- **Deliverables**: Groq Llama 3.3 70B integration, LLM entity extraction, Senior Analyst synthesis
+- **The Wow Moment**: A messy, unstructured alert with no structured fields — the LLM correctly identifies the IP and suspicious file through language reasoning
+
+### Phase 4: ML Behavioral Supervisor
+Moves security from static rules (Gate 3) to dynamic behavioral analysis (Gate 4).
+- **Deliverables**: Telemetry collector, feature engineering pipeline, Isolation Forest training, real-time inference
+- **The Wow Moment**: `agent-666-smart` uses only permitted tools but gets caught because its pattern (15x `read_logs`) deviates from the trained baseline
+
+---
+
+## Demo Walkthrough
+
+### Scenario A: Normal Agent
+1. Alert received: *"Suspicious CAN bus activity on 192.168.1.45"*
+2. JWT token issued and signed with RS256 private key
+3. Each tool call passes all 4 gates
+4. ML Supervisor scores the session as `NORMAL`
+5. Final incident report saved — **Status: SUCCESS**
+
+### Scenario B: Static Attacker (Gate 3)
+1. `agent-666` obtains a token with minimal scope
+2. Reads logs (legitimate) then attempts `exec_shell`
+3. Gate 3 (OPA) denies it — tool not in policy allowlist
+4. Lockdown fires: token revoked in Redis, agent quarantined
+5. **Status: QUARANTINED**
+
+### Scenario C: Smart Attacker (Gate 4)
+1. `agent-666-smart` obtains a token and uses only allowed tools
+2. Calls `read_logs` 15 times in rapid succession to scrape data
+3. Gate 4 (ML Supervisor) detects anomalous call frequency & streak
+4. Lockdown fires automatically — **Status: QUARANTINED**
+
+---
+
+## The ML Model
+
+The ML Behavioral Supervisor uses a **self-trained Isolation Forest** — not a pretrained model.
+
+| Property | Detail |
+| :--- | :--- |
+| **Algorithm** | Isolation Forest (`scikit-learn`) |
+| **Training data** | 100 synthetic normal SOC sessions (generated by `ml/generate_baseline.py`) |
+| **Features** | 10 behavioral dimensions per session |
+| **Model file** | `ml/models/isolation_forest.pkl` |
+| **Inference** | Real-time after every tool call |
+| **Training time** | < 2 seconds |
+
+**The 10 behavioral features:**
+
+| # | Feature | What it captures |
+| :-- | :--- | :--- |
+| 1 | `total_calls` | Volume of tool calls |
+| 2 | `distinct_tools_count` | Variety of tools used |
+| 3 | `denied_calls_count` | Number of blocked attempts |
+| 4 | `avg_time_between_calls` | Call pacing |
+| 5 | `max_repeated_tool_streak` | Suspicious repetition |
+| 6 | `read_logs_count` | Log read frequency |
+| 7 | `virustotal_scan_count` | Scan frequency |
+| 8 | `write_report_count` | Report write frequency |
+| 9 | `session_duration` | Total session length |
+| 10 | `deny_to_allow_ratio` | Ratio of denied vs allowed calls |
+
+To retrain the model:
+```bash
+python -m ml.generate_baseline   # regenerate 100 normal sessions
+python -m ml.train_model         # retrain and save the .pkl
+```
 
 ---
 
 ## Agent Flow Diagrams
 
-### Phase 1 Workflow (Linear Logic)
-```mermaid
-graph TD
-    A[Start] --> B[request_token_node]
-    B --> C[read_logs_node]
-    C --> D[scan_file_node]
-    D --> E[write_report_node]
-    E --> F[success_node]
-    C -- Error --> G[error_node]
-    D -- Error --> G
-    E -- Error --> G
+### Phase 1 — Linear Workflow
+```
+Start
+  └─► request_token_node    (JWT issued)
+        └─► read_logs_node   (Gate 1)
+              └─► scan_file_node  (Gate 1)
+                    └─► write_report_node  (Gate 1)
+                          └─► success_node  ──► END
 ```
 
-### Phase 4 Workflow (ML Supervised)
-```mermaid
-graph TD
-    A[Start] --> B[request_token_node]
-    B --> C[read_logs_node]
-    C --> G[ML_Analysis_Gate]
-    G -- Normal --> D[scan_file_node]
-    G -- Anomaly --> H[Lockdown_Node]
-    D --> I[ML_Analysis_Gate]
-    I -- Normal --> E[write_report_node]
-    I -- Anomaly --> H
-    E --> F[success_node]
-    H --> J[END]
+### Phase 4 — Supervised Workflow
+```
+Start
+  └─► request_token_node
+        └─► read_logs_node  ──[Gate 4]──► ANOMALY? ──► lockdown ──► END
+                                  │
+                                NORMAL
+                                  │
+              └─► scan_file_node  ──[Gate 4]──► ANOMALY? ──► lockdown ──► END
+                                        │
+                                      NORMAL
+                                        │
+                    └─► write_report_node ──► success_node ──► END
 ```
 
 ---
 
 ## Zero-Trust Principles Applied
 
-| Principle | Implementation in Project |
+| Principle | Implementation |
 | :--- | :--- |
-| **Continuous Verification** | Every tool call must pass through 4 gates on every execution. |
-| **Least Privilege** | Tokens are scoped to specific tools; OPA denies any tool not in the allowlist. |
-| **Assume Breach** | The system assumes the agent is compromised and uses ML to detect behavioral drift. |
-| **Stateless Identity** | Uses JWT for identity, verified cryptographically at the tool edge. |
+| **Continuous Verification** | Every tool call passes all active gates on every execution — no session exceptions |
+| **Least Privilege** | Tokens are scoped to specific tools; OPA denies anything outside the explicit allowlist |
+| **Assume Breach** | The ML Supervisor assumes the agent may be compromised and monitors behavioral drift |
+| **Stateless Identity** | JWT verified cryptographically at the tool edge — no server-side sessions |
+| **Fail Closed** | If Redis or OPA are unreachable, the system denies ALL access by default |
 
 ---
 
 ## Key Design Decisions
 
-- **RS256 over HS256**: Used asymmetric signing so the tools can verify tokens using a public key without ever having access to the private signing key.
-- **OPA over If/Else**: Decoupling logic from security. Security policies can be updated via OPA without redeploying the agent code.
-- **Isolation Forest for ML**: Ideal for anomaly detection in security logs where normal data is abundant but attacks (anomalies) are rare and unpredictable.
-- **Fail-Closed on Unreachable**: If Redis or OPA are offline, the agent grants ZERO access. Security > Availability.
+- **RS256 over HS256**: Asymmetric signing — tools verify tokens with the public key without ever accessing the private signing key.
+- **OPA over if/else**: Security rules live in `soc_policy.rego`, not Python code. Policies can be updated without redeploying the agent.
+- **Isolation Forest**: Ideal for anomaly detection where normal data is abundant but attacks are rare and unpredictable. No labeled attack data required.
+- **Fail-Closed on Unreachable Services**: If Redis or OPA go offline, access is denied — security over availability.
+- **Temperature = 0 for LLM**: Deterministic, reproducible outputs for security-critical reasoning.
+- **Self-Trained ML**: The model is trained on synthetic data generated by the project itself — no external datasets needed.
 
 ---
 
 ## Known Limitations & Future Work
 
-1. **Ephemeral Keys**: RSA keys are currently generated in-process. *Future: Use AWS KMS or HashiCorp Vault.*
-2. **Limited Feature Set**: ML behavioral analysis currently uses only 10 features. *Future: Add sequence length and entropy checks.*
-3. **Mock Data Only**: The agent doesn't talk to a real SIEM. *Future: Splunk/Sentinel integration.*
-4. **Single-Agent Scope**: The system handles one agent at a time. *Future: Multi-agent swarm orchestration.*
-5. **No Human Review**: Lockdown is fully autonomous. *Future: Slack/Discord human approval gates.*
+1. **Ephemeral Keys**: RSA keys generated in-process. *Future: AWS KMS / HashiCorp Vault.*
+2. **Synthetic Training Data**: Model trained on simulated sessions. *Future: Train on real SOC telemetry.*
+3. **Mock Logs Only**: No real SIEM connection. *Future: Splunk/Sentinel integration.*
+4. **Single-Agent Scope**: One agent at a time. *Future: Multi-agent swarm coordination.*
+5. **No Human Review Gate**: Lockdown is fully autonomous. *Future: Slack/Discord approval gates.*
 
 ---
 
-## Tech Stack Table
+## Tech Stack
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Graph Context** | LangGraph | Stateful workflow and node management |
-| **Identity** | PyJWT / Cryptography | RS256 token issuance and validation |
-| **Gate 2** | Redis | Real-time token/agent revocation |
-| **Gate 3** | OPA | Rego-based external policy enforcement |
-| **LLM Inference** | Groq / Llama 3.3 | High-speed security reasoning |
-| **ML Engine** | scikit-learn | Isolation Forest for behavioral analysis |
+| **Agent Workflow** | LangGraph | Stateful graph-based agent execution |
+| **Identity** | PyJWT + Cryptography | RS256 JWT issuance and validation |
+| **Gate 2** | Redis | Real-time token and agent revocation |
+| **Gate 3** | Open Policy Agent (OPA) | Rego-based external policy enforcement |
+| **LLM Inference** | Groq / Llama 3.3 70B | High-speed reasoning and entity extraction |
+| **ML Engine** | scikit-learn | Isolation Forest behavioral anomaly detection |
+| **Data** | pandas | Feature matrix construction for ML training |
 
 ---
 
-## Team
+## Course Information
 - **Course**: Data Security and Privacy — DS308
 - **Project**: Zero-Trust Non-Human Identity Framework for Agentic SOC
 

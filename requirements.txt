@@ -16,3 +16,7 @@ requests>=2.31.0
 # ── Phase 3: AI Intelligence ────────────────────────────────────────────────
 langchain-groq>=0.1.0
 python-dotenv>=1.0.0
+
+# ── Phase 4: ML Behavioral Supervisor ───────────────────────────────────────
+scikit-learn>=1.4.0
+pandas>=2.2.0
