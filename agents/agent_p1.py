@@ -13,7 +13,7 @@ import sys
 from typing import TypedDict, Optional
 
 from langgraph.graph import StateGraph, END
-from core.identity_provider import issue_token
+from core.identity_provider import issue_token, is_token_near_expiry, refresh_token
 from security.tool_wrapper_p1 import requires_auth, UnauthorizedToolCallError
 from core.mock_data import get_logs, mock_virustotal_scan, save_incident_report
 
@@ -97,24 +97,36 @@ def request_token_node(state: AgentState) -> AgentState:
 
 
 def read_logs_node(state: AgentState) -> AgentState:
+    token = state["token"]
+    if is_token_near_expiry(token):
+        token = refresh_token(token)
+
     ip = _extract_ip(state["alert"])
     if not ip:
         raise ValueError(f"No IP found in alert: {state['alert']}")
     print(f"[AGENT-P1] Target IP: {ip}")
-    logs = read_logs(state["token"], ip)
-    return {**state, "logs": logs}
+    logs = read_logs(token, ip)
+    return {**state, "logs": logs, "token": token}
 
 
 def scan_file_node(state: AgentState) -> AgentState:
+    token = state["token"]
+    if is_token_near_expiry(token):
+        token = refresh_token(token)
+
     filename = _extract_filename(state["logs"])
     if not filename:
         raise ValueError("No recognizable filename found in logs.")
     print(f"[AGENT-P1] Suspicious file: {filename}")
-    scan_result = virustotal_scan(state["token"], filename)
-    return {**state, "scan_result": scan_result}
+    scan_result = virustotal_scan(token, filename)
+    return {**state, "scan_result": scan_result, "token": token}
 
 
 def write_report_node(state: AgentState) -> AgentState:
+    token = state["token"]
+    if is_token_near_expiry(token):
+        token = refresh_token(token)
+
     ip = _extract_ip(state["alert"])
     filename = _extract_filename(state["logs"] or "")
     report = {
@@ -126,9 +138,9 @@ def write_report_node(state: AgentState) -> AgentState:
         "scan_result": state["scan_result"],
         "verdict": "MALICIOUS" if state["scan_result"] and "MALICIOUS" in state["scan_result"] else "CLEAN",
     }
-    confirmation = write_report(state["token"], report)
+    confirmation = write_report(token, report)
     print(f"[AGENT-P1] {confirmation}")
-    return {**state, "report": report}
+    return {**state, "report": report, "token": token}
 
 
 def success_node(state: AgentState) -> AgentState:

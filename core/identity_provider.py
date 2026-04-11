@@ -117,3 +117,56 @@ def validate_token(token: str, tool_being_called: str) -> dict:
 
     print("OK")
     return payload
+
+
+def is_token_near_expiry(token: str, threshold_seconds: int = 60) -> bool:
+    """
+    Check if a token is close to expiring (within the given threshold).
+    Supports checking tokens that may have already expired.
+    """
+    try:
+        # We decode WITHOUT verifying expiry just to check the 'exp' claim
+        payload = jwt.decode(
+            token,
+            _PUBLIC_KEY_PEM,
+            algorithms=[TOKEN_ALGORITHM],
+            options={"verify_exp": False},
+        )
+        exp = payload.get("exp")
+        if not exp:
+            return False
+
+        # exp is a unix timestamp
+        expires_at = datetime.fromtimestamp(exp, tz=timezone.utc)
+        now = datetime.now(tz=timezone.utc)
+        remaining = (expires_at - now).total_seconds()
+
+        return remaining < threshold_seconds
+
+    except Exception:
+        # If the token is mangled, consider it expired/near-expiry
+        return True
+
+
+def refresh_token(token: str) -> str:
+    """
+    Swap a valid (but possibly near-expiry) token for a fresh one.
+    The new token retains the same agent_id and allowed_tools.
+    """
+    try:
+        # We trust the signature but don't care if it's already expired for the swap
+        payload = jwt.decode(
+            token,
+            _PUBLIC_KEY_PEM,
+            algorithms=[TOKEN_ALGORITHM],
+            options={"verify_exp": False},
+        )
+
+        agent_id = payload.get("agent_id", "unknown")
+        allowed_tools = payload.get("allowed_tools", [])
+
+        print(f"[RE-AUTH] Refreshing token for agent: {agent_id}...")
+        return issue_token(agent_id, allowed_tools)
+
+    except Exception as exc:
+        raise TokenValidationError(f"Could not refresh token: {exc}")

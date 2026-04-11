@@ -14,7 +14,7 @@ from typing import TypedDict, Optional
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, SystemMessage
 
-from core.identity_provider import issue_token
+from core.identity_provider import issue_token, is_token_near_expiry, refresh_token
 from security.tool_wrapper_p2 import requires_auth
 from core.mock_data import get_logs, mock_virustotal_scan, save_incident_report
 from llm.llm_provider import get_llm
@@ -105,16 +105,24 @@ def request_token_node(state: AgentState) -> AgentState:
 
 
 def read_logs_node(state: AgentState) -> AgentState:
+    token = state["token"]
+    if is_token_near_expiry(token):
+        token = refresh_token(token)
+
     print("[AGENT-P3] LLM identifying target IP...")
     ip = _llm_extract_entity(state["alert"], "IPv4 address")
     if not ip:
         raise ValueError(f"LLM could not find an IP in: {state['alert']}")
     print(f"[AGENT-P3] Target IP identified: {ip}")
-    logs = read_logs(state["token"], ip)
-    return {**state, "logs": logs}
+    logs = read_logs(token, ip)
+    return {**state, "logs": logs, "token": token}
 
 
 def scan_file_node(state: AgentState) -> AgentState:
+    token = state["token"]
+    if is_token_near_expiry(token):
+        token = refresh_token(token)
+
     print("[AGENT-P3] LLM searching logs for suspicious files...")
     filename = _llm_extract_entity(
         state["logs"], "suspicious filename (ending in .exe, .sh, .py, etc.)"
@@ -122,11 +130,15 @@ def scan_file_node(state: AgentState) -> AgentState:
     if not filename:
         raise ValueError("LLM could not find a suspicious filename in logs.")
     print(f"[AGENT-P3] Suspicious file identified: {filename}")
-    scan_result = virustotal_scan(state["token"], filename)
-    return {**state, "scan_result": scan_result}
+    scan_result = virustotal_scan(token, filename)
+    return {**state, "scan_result": scan_result, "token": token}
 
 
 def write_report_node(state: AgentState) -> AgentState:
+    token = state["token"]
+    if is_token_near_expiry(token):
+        token = refresh_token(token)
+
     print("[AGENT-P3] LLM synthesising final incident report...")
     llm = get_llm()
     summary_prompt = (
@@ -154,10 +166,10 @@ def write_report_node(state: AgentState) -> AgentState:
         "verdict": verdict,
         "summary": summary.strip(),
     }
-    confirmation = write_report(state["token"], report)
+    confirmation = write_report(token, report)
     print(f"[AGENT-P3] {confirmation}")
     print(f"[AGENT-P3] Final Verdict: {verdict}")
-    return {**state, "report": report}
+    return {**state, "report": report, "token": token}
 
 
 def success_node(state: AgentState) -> AgentState:
