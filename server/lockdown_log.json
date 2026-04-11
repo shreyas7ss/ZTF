@@ -1,0 +1,8 @@
+[
+  {
+    "timestamp": "2026-04-11T15:16:32.693994",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  }
+]

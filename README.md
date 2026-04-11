@@ -95,48 +95,21 @@ The result: a compromised agent is blocked in **under 500ms** with no human inte
 
 ```
 ZTF/
-├── core/                        # Shared security infrastructure (all phases use this)
-│   ├── identity_provider.py     # JWT issuance & RS256 validation
-│   ├── revocation_store.py      # Redis-backed token/agent revocation
-│   ├── lockdown.py              # Auto-quarantine & incident logging
-│   ├── opa_client.py            # OPA REST API client
-│   ├── mock_data.py             # Simulated CAN bus logs & VirusTotal data
-│   └── policies/
-│       ├── soc_policy.rego      # OPA Rego policy (default deny)
-│       └── upload_policy.py     # Uploads policy to running OPA server
+├── server/                      # Backend Logic & Security Infrastructure
+│   ├── agents/                  # All agent implementations (p1, p3, malicious)
+│   ├── core/                    # Token issuance, OPA client, Redis store
+│   ├── ml/                      # Machine Learning pipeline (Isolation Forest)
+│   ├── security/                # Tool wrappers for all 4 gates
+│   ├── llm/                     # Groq provider
+│   ├── demos/                   # CLI entry points (demo_p1, etc.)
+│   ├── api_server.py            # FastAPI Backend
+│   ├── .env                     # API keys
+│   └── requirements.txt         # Python dependencies
 │
-├── security/                    # The 3 distinct gate-level wrappers
-│   ├── tool_wrapper_p1.py       # Phase 1: Gate 1 only (JWT, no Docker needed)
-│   ├── tool_wrapper_p2.py       # Phase 2/3: Gates 1, 2, 3 (JWT + Redis + OPA)
-│   ├── tool_wrapper_p4.py       # Phase 4: All 4 gates (+ ML Supervisor)
-│   └── soc_tools.py             # Tool factory (read_logs, virustotal_scan, etc.)
+├── client/                      # Frontend Dashboard (React + Vite)
+│   ├── src/                     # App.jsx, index.css
+│   └── package.json             # NPM dependencies
 │
-├── agents/                      # All agent implementations
-│   ├── agent_p1.py              # Phase 1: Regex-based investigation
-│   ├── agent_p3.py              # Phase 3+: Groq LLM-powered reasoning
-│   ├── malicious_agent.py       # Gate 3 violator (exec_shell attempt)
-│   └── malicious_agent_v2.py   # Gate 4 violator (behavioral attacker)
-│
-├── ml/                          # Machine Learning pipeline (Phase 4)
-│   ├── telemetry.py             # JSONL event logger
-│   ├── features.py              # 10-feature behavioral extractor
-│   ├── generate_baseline.py     # Generates 100 normal training sessions
-│   ├── train_model.py           # Trains & saves the Isolation Forest model
-│   ├── ml_supervisor.py         # Real-time inference engine
-│   └── models/
-│       └── isolation_forest.pkl # Pre-trained model (ready to use)
-│
-├── llm/
-│   └── llm_provider.py          # Groq Llama 3.3 70B initialization
-│
-├── demos/                       # Entry points — one per phase
-│   ├── demo_p1.py               # Phase 1 demo (no Docker required)
-│   ├── demo_p2.py               # Phase 2 demo (Docker required)
-│   ├── demo_p3.py               # Phase 3 demo (Docker + Groq API)
-│   └── demo_p4.py               # Phase 4 demo (Docker + Groq API + ML)
-│
-├── .env                         # API keys (not committed)
-├── requirements.txt
 └── README.md
 ```
 
@@ -155,16 +128,21 @@ ZTF/
 git clone https://github.com/shreyas7ss/ZTF.git
 cd ZTF
 
+# Setup Server
+cd server
 python -m venv venv
 venv\Scripts\activate          # Windows
 # source venv/bin/activate     # macOS/Linux
-
 pip install -r requirements.txt
+
+# Setup Client
+cd ../client
+npm install
 ```
 
 ### Step 2 — Configure API Key
 
-Create a `.env` file in the project root:
+Create a `.env` file in the `server/` directory:
 
 ```env
 GROK_API_KEY=your_groq_api_key_here
@@ -188,23 +166,38 @@ docker start redis-soc opa-soc
 > **Only needed for Phase 2, 3, and 4.**
 
 ```bash
-python -m core.policies.upload_policy
-```
+## How to Run the Dashboard (Full Stack)
 
-Expected output: `[OPA] Policy uploaded successfully`
+This is the recommended way to demonstrate the project.
+
+1. **Start Infrastructure**:
+   ```bash
+   docker start redis-soc opa-soc
+   ```
+
+2. **Launch Backend**:
+   ```bash
+   cd server
+   python api_server.py
+   ```
+
+3. **Launch Frontend**:
+   ```bash
+   cd client
+   npm run dev
+   ```
 
 ---
 
-## How to Run Each Demo
+## How to Run CLI Demos
 
-All commands are run from the **project root** (`ZTF/`).
-
----
+All CLI commands must be run from the `server/` directory.
 
 ### Phase 1 — JWT Authentication Only
 > No Docker required. Just Python.
 
 ```bash
+cd server
 python -m demos.demo_p1
 ```
 

@@ -77,3 +77,17 @@ def clear_stores() -> None:
         print("[REVOCATION] Redis sets cleared for fresh run.")
     except Exception as exc:
         print(f"[ERROR] Redis delete failed: {exc}")
+
+
+def get_quarantine_list() -> list[str]:
+    """Returns all quarantined agent IDs."""
+    if _r is None: return []
+    try: return list(_r.smembers(QUARANTINED_AGENTS_SET))
+    except: return []
+
+
+def get_revoked_list() -> list[str]:
+    """Returns all revoked token JTIs."""
+    if _r is None: return []
+    try: return list(_r.smembers(REVOKED_TOKENS_SET))
+    except: return []

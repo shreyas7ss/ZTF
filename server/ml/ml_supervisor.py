@@ -63,3 +63,21 @@ supervisor = MLSupervisor()
 def check_behavior(session_id: str, agent_id: str) -> bool:
     """Public interface to score a session against the behavioral baseline."""
     return supervisor.score_session(session_id, agent_id)
+
+
+def get_behavior_score(session_id: str) -> float:
+    """Returns a raw anomaly score (0.0 to 1.0). Higher = more anomalous."""
+    if not supervisor.model:
+        return 0.0
+    
+    try:
+        features = extract_session_features(session_id)
+        df = pd.DataFrame([features])
+        # decision_function returns negative values for anomalies.
+        # We transform it into a 0-1 range where > 0.5 is suspicious.
+        raw_score = supervisor.model.decision_function(df)[0]
+        # Map roughly: normal (0.1) -> 0.1, anomaly (-0.1) -> 0.8
+        normalized = 0.5 - (raw_score * 2) 
+        return max(0.0, min(1.0, normalized))
+    except:
+        return 0.0
