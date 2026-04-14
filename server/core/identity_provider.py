@@ -87,7 +87,7 @@ def validate_token(token: str, tool_being_called: str) -> dict:
     Validate a JWT and confirm the agent is permitted to call a given tool.
     Also checks the revocation store (Redis) on every call.
     """
-    print(f"[AUTH] Validating token for tool: {tool_being_called}... ", end="", flush=True)
+    print(f"[AUTH] Gate 1 — Validating tool: {tool_being_called}... ", end="", flush=True)
 
     try:
         payload = jwt.decode(
@@ -96,27 +96,41 @@ def validate_token(token: str, tool_being_called: str) -> dict:
             algorithms=[TOKEN_ALGORITHM],
         )
     except jwt.ExpiredSignatureError:
-        print("FAILED")
+        print("FAILED (EXPIRED)")
         raise TokenValidationError(f"Token has expired — cannot call '{tool_being_called}'.")
     except jwt.InvalidTokenError as exc:
-        print("FAILED")
+        print("FAILED (INVALID_SIG)")
         raise TokenValidationError(f"Token signature is invalid. Detail: {exc}")
 
     # Revocation Store check
     jti = payload.get("jti")
     if jti and is_revoked(jti):
-        print("FAILED")
-        raise TokenRevokedException(f"Token {jti} has been revoked — access denied.")
+        print("FAILED (REVOKED/OFFLINE)")
+        raise TokenRevokedException(
+            f"Access Denied: Token {jti} is revoked OR Redis is unreachable."
+        )
 
     allowed: list[str] = payload.get("allowed_tools", [])
     if tool_being_called not in allowed:
-        print("FAILED")
+        print("FAILED (SCOPE)")
         raise TokenValidationError(
             f"Tool '{tool_being_called}' is NOT in the allowed_tools list {allowed}."
         )
 
     print("OK")
     return payload
+
+
+def peek_token_payload(token: str) -> dict:
+    """
+    Extracts payload from a token WITHOUT verifying the signature or expiry.
+    USE ONLY FOR LOGGING/DIAGNOSTICS DURING ERRORS.
+    """
+    try:
+        # We decode without verification just to extract metadata for logs
+        return jwt.decode(token, options={"verify_signature": False, "verify_exp": False})
+    except Exception:
+        return {}
 
 
 def is_token_near_expiry(token: str, threshold_seconds: int = 60) -> bool:

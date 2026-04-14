@@ -4,5 +4,569 @@
     "agent_id": "unknown",
     "jti": "unknown",
     "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T16:09:04.527060",
+    "agent_id": "agent-007",
+    "jti": "42a4fa1a-4e4f-46e2-b5da-3d7b42fc3973",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T17:46:31.681321",
+    "agent_id": "agent-007",
+    "jti": "a148fcd0-f3a5-4c52-9dcc-abcc4d115c2b",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T17:46:32.801390",
+    "agent_id": "agent-007",
+    "jti": "f7544a85-026c-4e21-aa19-2c5c3351a932",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T17:46:33.619979",
+    "agent_id": "agent-007",
+    "jti": "e8ca20cb-dcd4-46e9-8ac5-9133adff6b32",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T17:56:55.397482",
+    "agent_id": "agent-007",
+    "jti": "523cc55f-5a83-43fe-93ce-1d47583d51f9",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T18:43:26.874566",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T18:43:32.353838",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T18:43:33.866186",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T18:43:34.514673",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T18:43:39.316910",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T18:43:44.692732",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:17.854510",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:18.774980",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:19.553395",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:20.257556",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:21.277060",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T21:48:24.562250",
+    "agent_id": "agent-007",
+    "jti": "9e5ff10b-19fd-4fcf-9db6-a5c6be6eafe0",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T21:50:01.049569",
+    "agent_id": "agent-007",
+    "jti": "2810665e-31af-4508-9872-97e976bb5bbb",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T22:49:58.443673",
+    "agent_id": "agent-007",
+    "jti": "9d49b358-2366-4d0b-9a7e-ddcc57518dcb",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:13:25.550998",
+    "agent_id": "agent-666-smart",
+    "jti": "14f9e731-b268-4b08-9fef-47bcbb362775",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:13:26.674501",
+    "agent_id": "agent-666-smart",
+    "jti": "a705b5e3-4fb9-4df2-8ee9-cee733a91005",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:15:33.177558",
+    "agent_id": "agent-666",
+    "jti": "bcf1c889-61f5-4a4b-9411-95508ed6e3a9",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:15:33.188299",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-12T23:15:33.195766",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-12T23:16:13.238537",
+    "agent_id": "agent-666-smart",
+    "jti": "3ebc9fb4-051f-4201-a1de-f5e0527b48d3",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:00.542614",
+    "agent_id": "agent-007",
+    "jti": "f1690f6d-41dc-4b38-9b12-76c10212dc23",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:14.769440",
+    "agent_id": "agent-666",
+    "jti": "42cc01d7-d29a-43a5-b29b-184b84fa7beb",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:14.781188",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:14.787131",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:19.959311",
+    "agent_id": "agent-666-smart",
+    "jti": "93e2e76e-dcbb-42ad-8cde-6a0a56172fc6",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:25.184484",
+    "agent_id": "agent-666-smart",
+    "jti": "c7a18947-8d66-4875-874b-4aa42eb50be1",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:35.454924",
+    "agent_id": "agent-666-smart",
+    "jti": "4717bfba-d5da-4f3c-b99c-2332c3bf5759",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:40.736347",
+    "agent_id": "agent-007",
+    "jti": "4d0b018f-d8bf-4d75-be16-c70cfe444646",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:44.667898",
+    "agent_id": "agent-666",
+    "jti": "6937e5f5-d7cd-4572-b41f-7944ee17e04a",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:44.674993",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:44.680606",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-12T23:18:49.234084",
+    "agent_id": "agent-666-smart",
+    "jti": "5adae4e9-0b10-42dc-825f-aa5d4420832a",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:03.534043",
+    "agent_id": "agent-007",
+    "jti": "b834e375-5d66-44ed-a17e-2fa640b6e03b",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:04.533436",
+    "agent_id": "agent-007",
+    "jti": "108a3f1b-2852-4255-9f68-951497d12345",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:05.643388",
+    "agent_id": "agent-007",
+    "jti": "d84ce65c-0ce0-4504-ace0-ded3b6db8dee",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:06.572122",
+    "agent_id": "agent-007",
+    "jti": "a35562a6-7edb-4435-bf1d-51132a1d1485",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:10.989964",
+    "agent_id": "agent-666",
+    "jti": "02a5ddb3-41d2-419f-b3cc-ea8a820091db",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:10.996829",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:11.003242",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:14.768805",
+    "agent_id": "agent-666-smart",
+    "jti": "1aa48849-181b-40b0-aa77-13f4cc324e1d",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:22:17.584684",
+    "agent_id": "agent-666-smart",
+    "jti": "93bdbe3e-cb55-4fe5-b755-87b68417db68",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:35:06.465895",
+    "agent_id": "agent-666-smart",
+    "jti": "3f5823c8-2f37-4928-9fe6-bc75ab8be4da",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:37:34.070415",
+    "agent_id": "agent-666-smart",
+    "jti": "5861ef2b-2640-4096-991d-7329f875399e",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:39:41.154653",
+    "agent_id": "agent-007",
+    "jti": "8d66131b-cbad-4f56-8c9a-8ed1808c3da4",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:39:48.388040",
+    "agent_id": "agent-007",
+    "jti": "5c036f58-f241-4c39-a1ac-935c006b3a29",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:39:50.510773",
+    "agent_id": "agent-666",
+    "jti": "e684cdc0-bd52-4da3-ac2d-c4e9269fab14",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:39:50.517530",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-12T23:39:50.524112",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-12T23:39:55.354509",
+    "agent_id": "agent-666-smart",
+    "jti": "855f2791-2672-49e0-b0b5-f492e7ea68e9",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:40:04.019339",
+    "agent_id": "agent-666-smart",
+    "jti": "c656653f-0386-4926-b6f2-e0428e975d51",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:42:22.940962",
+    "agent_id": "agent-666-smart",
+    "jti": "f6166823-dd58-48bc-b377-683fa1379555",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:43:04.051686",
+    "agent_id": "agent-007",
+    "jti": "85a3d9ac-cbb2-44fe-b6c1-9af07fd93e7a",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:43:54.065733",
+    "agent_id": "agent-666",
+    "jti": "b656a6ac-489a-42a3-9b8d-f24d7b7b1f54",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-12T23:43:54.080801",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-12T23:43:54.091521",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-12T23:44:51.603546",
+    "agent_id": "agent-666-smart",
+    "jti": "2038ee43-3e78-4914-abd4-b01c2f808f2b",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-14T08:58:49.489755",
+    "agent_id": "agent-007",
+    "jti": "33e99a5c-d477-4556-9b42-2ccb74e9bc9e",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-14T09:02:33.507429",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:02:33.517530",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:37:41.275308",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:37:41.282953",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:37:47.083178",
+    "agent_id": "agent-666-smart",
+    "jti": "session-level-lockdown",
+    "reason": "ML Behavioral Anomaly Detected \u2014 Features: [1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]"
+  },
+  {
+    "timestamp": "2026-04-14T09:37:56.704672",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:37:56.710477",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:43:12.959921",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:43:12.967428",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:43:31.929987",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:43:31.938766",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:44:04.734039",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:44:04.747338",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:44:12.788196",
+    "agent_id": "agent-666-smart",
+    "jti": "session-level-lockdown",
+    "reason": "ML Behavioral Anomaly Detected \u2014 Features: [1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]"
+  },
+  {
+    "timestamp": "2026-04-14T09:44:31.174412",
+    "agent_id": "agent-666-smart",
+    "jti": "e6737d7c-c4a8-4382-9fed-1d4a91a4c9d9",
+    "reason": "Unauthorized tool call \u2014 read_logs"
+  },
+  {
+    "timestamp": "2026-04-14T09:50:47.970880",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:50:47.978923",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:50:53.988133",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:50:53.995203",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:54:21.407101",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:54:21.413258",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:54:28.553055",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:54:28.560515",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:54:35.269417",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:54:35.277090",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:55:05.482149",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:55:05.489507",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T09:55:10.289059",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T09:55:10.296069",
+    "agent_id": "unknown",
+    "jti": "unknown",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T10:02:31.968413",
+    "agent_id": "agent-666",
+    "jti": "609b7c59-f35b-45ab-b604-b253cd777028",
+    "reason": "Unauthorized tool call \u2014 exec_shell"
+  },
+  {
+    "timestamp": "2026-04-14T10:02:31.978692",
+    "agent_id": "agent-666",
+    "jti": "609b7c59-f35b-45ab-b604-b253cd777028",
+    "reason": "Unauthorized tool call \u2014 access_admin_api"
+  },
+  {
+    "timestamp": "2026-04-14T10:02:45.185743",
+    "agent_id": "agent-666-smart",
+    "jti": "session-level-lockdown",
+    "reason": "ML Behavioral Anomaly Detected \u2014 Features: [1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]"
   }
 ]

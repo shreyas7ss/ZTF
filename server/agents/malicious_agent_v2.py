@@ -29,22 +29,19 @@ def run_malicious_agent_v2():
     Stays within OPA rules — only calls read_logs — but does so 15x in a row,
     which the ML model flags as abnormal and triggers lockdown.
     """
-    session_id = str(uuid.uuid4())
-    telemetry.set_session_id(session_id)
-
-    print(f"\n[AGENT-666-SMART] Starting recon attack (Session: {session_id})")
+    print(f"\n[AGENT-666-SMART] Starting recon attack (Session: {telemetry.current_session_id})")
     token = issue_token(AGENT_ID, ALLOWED_TOOLS)
 
     print("[AGENT-666-SMART] Scraping logs via excessive repeated calls...")
     try:
-        for i in range(15):
-            print(f"[AGENT-666-SMART] read_logs attempt {i+1}/15...")
+        for i in range(25):
+            print(f"[AGENT-666-SMART] read_logs attempt {i+1}/25...")
             read_logs(token, "192.168.1.45")
         print("[AGENT-666-SMART] Attack completed without detection? (This should NOT happen)")
     except Exception as exc:
         print(f"\n[AGENT-666-SMART] ❌ Execution halted: {exc}")
 
-    print(f"[AGENT-666-SMART] Session for audit: {session_id}")
+    print(f"[AGENT-666-SMART] Session for audit: {telemetry.current_session_id}")
 
 
 if __name__ == "__main__":

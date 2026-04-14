@@ -13,10 +13,15 @@ import redis
 # ---------------------------------------------------------------------------
 
 try:
-    _r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+    _r = redis.Redis(host="localhost", port=6379, decode_responses=True)
     _r.ping()
 except Exception as exc:
-    print(f"[ERROR] Redis unreachable — failing closed. Detail: {exc}")
+    print("\n" + "!" * 60)
+    print(f"[REDIS ERROR] Could not reach localhost:6379.")
+    print(f"Detail: {exc}")
+    print("Zero-Trust System is FAIL-CLOSED. No tool calls will be permitted.")
+    print("HELP: Run 'docker start redis-soc' to resume operations.")
+    print("!" * 60 + "\n")
     _r = None
 
 REVOKED_TOKENS_SET = "revoked_tokens"

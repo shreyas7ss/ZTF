@@ -12,7 +12,12 @@ Triggers automated lockdown on any unauthorized attempt or anomalous behavior.
 import functools
 from typing import Callable, Any
 
-from core.identity_provider import validate_token, TokenValidationError, TokenRevokedException
+from core.identity_provider import (
+    validate_token,
+    TokenValidationError,
+    TokenRevokedException,
+    peek_token_payload,
+)
 from core.revocation_store import is_revoked, is_quarantined
 from core.opa_client import check_policy
 from core.lockdown import attempt_unauthorized_call
@@ -56,8 +61,13 @@ def requires_auth(func: Callable) -> Callable:
             payload = validate_token(token, tool_name)
             print("[AUTH] Gate 1 — JWT valid ✓")
         except Exception as exc:
-            attempt_unauthorized_call("unknown", "unknown", tool_name)
-            telemetry.log_event("unknown", tool_name, "DENIED (Gate 1)", str(exc))
+            # Observability Fix: Try to identify who is being blocked
+            peek = peek_token_payload(token)
+            agent_id = peek.get("agent_id", "unknown")
+            jti = peek.get("jti", "unknown")
+
+            attempt_unauthorized_call(agent_id, jti, tool_name)
+            telemetry.log_event(agent_id, tool_name, "DENIED (Gate 1)", str(exc))
             raise
 
         agent_id: str = payload.get("agent_id", "unknown-agent")

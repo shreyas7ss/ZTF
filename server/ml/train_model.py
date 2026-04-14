@@ -53,7 +53,7 @@ def main():
     # Train Isolation Forest
     model = IsolationForest(
         n_estimators=100,
-        contamination=0.01,  # Assume ~1% of baseline may be noisy
+        contamination="auto",
         random_state=42,
     )
     print("[TRAIN] Fitting Isolation Forest model...")

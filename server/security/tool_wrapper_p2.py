@@ -11,7 +11,12 @@ Triggers automated lockdown on any unauthorized attempt.
 import functools
 from typing import Callable, Any
 
-from core.identity_provider import validate_token, TokenValidationError, TokenRevokedException
+from core.identity_provider import (
+    validate_token, 
+    TokenValidationError, 
+    TokenRevokedException,
+    peek_token_payload
+)
 from core.revocation_store import is_revoked, is_quarantined
 from core.opa_client import check_policy
 from core.lockdown import attempt_unauthorized_call
@@ -49,7 +54,10 @@ def requires_auth(func: Callable) -> Callable:
             payload = validate_token(token, tool_name)
             print("[AUTH] Gate 1 — JWT valid ✓")
         except Exception as exc:
-            attempt_unauthorized_call("unknown", "unknown", tool_name)
+            peek = peek_token_payload(token)
+            err_agent_id = peek.get("agent_id", "unknown")
+            err_jti = peek.get("jti", "unknown")
+            attempt_unauthorized_call(err_agent_id, err_jti, tool_name)
             raise
 
         agent_id: str = payload.get("agent_id", "unknown-agent")

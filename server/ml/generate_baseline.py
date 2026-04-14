@@ -20,17 +20,22 @@ from ml.telemetry import log_event, set_session_id, clear_telemetry
 
 
 def simulate_normal_session():
-    """Simulates a standard 3-tool investigation with realistic timing jitter."""
+    """Simulates a standard investigation with realistic timing and behavioral variance."""
     session_id = str(uuid.uuid4())
     set_session_id(session_id)
     agent_id = "agent-baseline"
 
-    time.sleep(random.uniform(0.01, 0.05))
-    log_event(agent_id, "read_logs", "SUCCESS")
+    # Variance: read_logs 1 to 3 times
+    for _ in range(random.randint(1, 3)):
+        time.sleep(random.uniform(0.01, 0.05))
+        log_event(agent_id, "read_logs", "SUCCESS")
 
-    time.sleep(random.uniform(0.02, 0.1))
-    log_event(agent_id, "virustotal_scan", "SUCCESS")
+    # Variance: scan 0 to 2 files
+    for _ in range(random.randint(0, 2)):
+        time.sleep(random.uniform(0.02, 0.1))
+        log_event(agent_id, "virustotal_scan", "SUCCESS")
 
+    # Always write report
     time.sleep(random.uniform(0.01, 0.05))
     log_event(agent_id, "write_report", "SUCCESS")
 
